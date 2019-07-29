@@ -1,0 +1,42 @@
+{
+    "name": "cognito/omnipay3-zippay",
+    "type": "library",
+    "description": "Zippay driver for the Omnipay 3 payment processing library",
+    "keywords": [
+        "gateway",
+        "merchant",
+        "omnipay",
+        "omnipay3",
+        "pay",
+        "payment",
+        "Zippay"
+    ],
+    "homepage": "https://github.com/joshbmarshall/omnipay3-zippay",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Josh Marshall",
+            "email": "josh@jmarshall.com.au"
+        },
+        {
+            "name": "Nivanka Fonseka",
+            "email": "nivanka@silverstripers.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Cognito\\Omnipay3ZipPay\\" : "src/"
+        }
+    },
+    "require": {
+        "omnipay/common": "^3",
+        "zipmoney/merchantapi-php": "^1.0"
+    },
+    "require-dev": {
+        "omnipay/tests": "~3"
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
+   },
+   "prefer-stable": true
+}
