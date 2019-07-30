@@ -15,11 +15,19 @@ class PurchaseRequest extends AbstractRequest {
 	}
 
 	public function getEnvironment() {
-		return $this->getParameter('environment');
+		return $this->getParameter('testMode') ? 'sandbox' : 'production';
 	}
 
 	public function setEnvironment($value) {
-		return $this->setParameter('environment', $value);
+		return $this->setParameter('testMode', $value == 'sandbox');
+	}
+
+	public function getTestMode() {
+		return $this->getParameter('testMode');
+	}
+
+	public function setTestMode($value) {
+		return $this->setParameter('testMode', $value);
 	}
 
 	public function getPlatform() {
@@ -46,19 +54,13 @@ class PurchaseRequest extends AbstractRequest {
 		return $this->setParameter('order', $value);
 	}
 
-	public function getConfig() {
-		return $this->getParameter('config');
-	}
-
-	public function setConfig($value) {
-		return $this->setParameter('config', $value);
-	}
-
 	public function getData() {
 		return array(
 			'shopper' => $this->getShopper(),
 			'order' => $this->getOrder(),
-			'config' => $this->getConfig()
+			'config' => [
+				'redirect_uri' => $this->getReturnUrl(),
+			],
 		);
 	}
 
@@ -82,21 +84,5 @@ class PurchaseRequest extends AbstractRequest {
 	}
 
 	public function sendData($data) {
-		\zipMoney\Configuration::getDefaultConfiguration()->setApiKey('Authorization', $this->getApiKey());
-		\zipMoney\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
-		\zipMoney\Configuration::getDefaultConfiguration()->setEnvironment($this->getEnvironment());
-		\zipMoney\Configuration::getDefaultConfiguration()->setPlatform($this->getPlatform());
-
-		$api_instance = new \zipMoney\Api\CheckoutsApi();
-		$body = new \zipMoney\Model\CreateCheckoutRequest($data);
-
-		try {
-			$checkout = $api_instance->checkoutsCreate($body);
-			$this->response = new PurchaseResponse($this, $data);
-			$this->response->setRedirectURL($checkout->getUri());
-			return $this->response;
-		} catch (Exception $e) {
-			echo 'Exception when calling ChargesApi->checkoutsCreate: ', $e->getMessage(), PHP_EOL;
-		}
 	}
 }

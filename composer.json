@@ -33,10 +33,12 @@
         "zipmoney/merchantapi-php": "^1.0"
     },
     "require-dev": {
-        "omnipay/tests": "~3"
+        "omnipay/tests": "~3",
+        "friendsofphp/php-cs-fixer": "^2.15"
     },
     "scripts": {
-        "test": "vendor/bin/phpunit"
+        "test": "vendor/bin/phpunit",
+        "tidy": "vendor/bin/php-cs-fixer fix src"
    },
    "prefer-stable": true
 }

@@ -69,10 +69,8 @@ class GatewayTest extends GatewayTestCase {
 					],
 				],
 			]);
-		$gateway->setConfig([
-				'redirect_uri' => 'https://testsite.local/cms/blah', // https://testsite.local/cms/blah?result=approved&checkoutId=co_dPj4QaaEK4AqgGLLmHpdp3&customerId=cus_lXVYIeC7V4zVDie5BrKDT2
-			]);
 		$transaction = $gateway->purchase();
+		$transaction->setReturnUrl('https://testsite.local/cms/blah'); // https://testsite.local/cms/blah?result=approved&checkoutId=co_dPj4QaaEK4AqgGLLmHpdp3&customerId=cus_lXVYIeC7V4zVDie5BrKDT2
 		$resp = $transaction->send();
 		$this->assertNotEmpty($resp->getRedirectUrl());
 		$this->assertTrue($resp->isRedirect());

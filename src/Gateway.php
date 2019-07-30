@@ -12,11 +12,10 @@ class Gateway extends AbstractGateway {
 	public function getDefaultParameters() {
 		return array(
 			'apiKey' => 'x',
-			'environment' => 'production',
+			'testMode' => false,
 			'platform' => 'Omnipay',
 			'shopper' => [],
 			'order' => [],
-			'config' => [],
 		);
 	}
 
@@ -37,20 +36,11 @@ class Gateway extends AbstractGateway {
 	}
 
 	public function setTestMode($value) {
-		$environment = $value ? 'sandbox' : 'production';
-		return $this->setParameter('environment', $environment);
+		return $this->setParameter('testMode', $value);
 	}
 
 	public function getTestMode() {
-		return $this->getParameter('environment') == 'sandbox';
-	}
-
-	public function setEnvironment($value) {
-		return $this->setParameter('environment', $value);
-	}
-
-	public function getEnvironment() {
-		return $this->getParameter('environment');
+		return $this->getParameter('testMode');
 	}
 
 	public function setShopper($value) {
@@ -67,14 +57,6 @@ class Gateway extends AbstractGateway {
 
 	public function getOrder() {
 		return $this->getParameter('order');
-	}
-
-	public function setConfig($value) {
-		return $this->setParameter('config', $value);
-	}
-
-	public function getConfig() {
-		return $this->getParameter('config');
 	}
 
 	public function purchase(array $parameters = array()) {

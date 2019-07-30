@@ -14,11 +14,19 @@ class CompletePurchaseRequest extends AbstractRequest {
 	}
 
 	public function getEnvironment() {
-		return $this->getParameter('environment');
+		return $this->getParameter('testMode') ? 'sandbox' : 'production';
 	}
 
 	public function setEnvironment($value) {
-		return $this->setParameter('environment', $value);
+		return $this->setParameter('testMode', $value == 'sandbox');
+	}
+
+	public function getTestMode() {
+		return $this->getParameter('testMode');
+	}
+
+	public function setTestMode($value) {
+		return $this->setParameter('testMode', $value);
 	}
 
 	public function getPlatform() {
@@ -49,40 +57,49 @@ class CompletePurchaseRequest extends AbstractRequest {
 		return $this->setParameter('order', $value);
 	}
 
-	public function getConfig() {
-		return $this->getParameter('config');
+	public function getOrderSuccess() {
+		return $this->getParameter('orderSuccess');
 	}
 
-	public function setConfig($value) {
-		return $this->setParameter('config', $value);
+	public function setOrderSuccess($value) {
+		return $this->setParameter('orderSuccess', $value);
 	}
 
 	public function getData() {
 		$data = $this->httpRequest->query->all();
 		$parameters = $this->getParameters();
-		$orderID = $parameters['payment_ref'];
 
-		$query = new Query();
-		$queryOrder = new QueryOrder();
-		$queryOrder->id = $orderID;
+		if ($this->getOrderSuccess()) {
+			return $data;
+		}
 
-		$query->request->orders[] = $queryOrder;
-		$isSuccessful = false;
-		try {
-			$response = $query->process();
-			if ($response->isSuccess()) {
-				$array = $response->toArray();
-				if (!empty($array['order_statuses'])) {
-					foreach ($array['order_statuses'] as $order_status) {
-						if ($orderID == $order_status['id'] && $order_status['status'] == 'Captured') {
-							$isSuccessful = true;
-						}
-					}
+		if (array_key_exists('result', $data)) {
+			if ($data['result'] == 'approved') {
+				// Now need to capture the payment
+
+				\zipMoney\Configuration::getDefaultConfiguration()->setApiKey('Authorization', $this->getApiKey());
+				\zipMoney\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
+				\zipMoney\Configuration::getDefaultConfiguration()->setEnvironment($this->getEnvironment());
+				\zipMoney\Configuration::getDefaultConfiguration()->setPlatform($this->getPlatform());
+				$api_instance = new \zipMoney\Api\ChargesApi();
+				$body = new \zipMoney\Model\CreateChargeRequest([
+					'authority' => [
+						'type' => 'checkout_id',
+						'value' => $data['checkoutId'],
+					],
+					'amount' => $this->getOrder()['amount'],
+					'currency' => 'AUD',
+					'capture' => true,
+				]);
+
+				try {
+					$result = $api_instance->chargesCreate($body);
+					$this->setOrderSuccess($result->getState() == 'captured');
+				} catch (Exception $e) {
+					echo 'Exception when calling ChargesApi->chargesCreate: ', $e->getMessage(), PHP_EOL;
 				}
 			}
-		} catch (Exception $e) {
 		}
-		$data['order_success'] = $isSuccessful;
 		return $data;
 	}
 

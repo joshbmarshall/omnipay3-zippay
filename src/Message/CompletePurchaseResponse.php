@@ -6,8 +6,7 @@ use Omnipay\Common\Message\AbstractResponse;
 
 class CompletePurchaseResponse extends AbstractResponse {
 	public function isSuccessful() {
-		$data = $this->getRequest()->getData();
-		return isset($data['order_success']) && $data['order_success'] == 1;
+		return $this->getRequest()->getOrderSuccess();
 	}
 
 	public function getMessage() {
