@@ -69,6 +69,7 @@ class PurchaseRequest extends AbstractRequest {
 		\zipMoney\Configuration::getDefaultConfiguration()->setApiKeyPrefix('Authorization', 'Bearer');
 		\zipMoney\Configuration::getDefaultConfiguration()->setEnvironment($this->getEnvironment());
 		\zipMoney\Configuration::getDefaultConfiguration()->setPlatform($this->getPlatform());
+		\zipMoney\Configuration::getDefaultConfiguration()->setRetryInterval(5);
 
 		$api_instance = new \zipMoney\Api\CheckoutsApi();
 		$body = new \zipMoney\Model\CreateCheckoutRequest($this->getData());
