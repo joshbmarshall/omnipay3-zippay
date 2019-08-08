@@ -18,6 +18,6 @@ class CompletePurchaseResponse extends AbstractResponse {
 	}
 
 	public function getTransactionReference() {
-		return '';
+		return $this->getRequest()->getReceiptNumber();
 	}
 }

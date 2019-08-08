@@ -65,6 +65,14 @@ class CompletePurchaseRequest extends AbstractRequest {
 		return $this->setParameter('orderSuccess', $value);
 	}
 
+	public function getReceiptNumber() {
+		return $this->getParameter('receiptNumber');
+	}
+
+	public function setReceiptNumber($value) {
+		return $this->setParameter('receiptNumber', $value);
+	}
+
 	public function getData() {
 		$data = $this->httpRequest->query->all();
 		$parameters = $this->getParameters();
@@ -95,6 +103,7 @@ class CompletePurchaseRequest extends AbstractRequest {
 				try {
 					$result = $api_instance->chargesCreate($body);
 					$this->setOrderSuccess($result->getState() == 'captured');
+					$this->setReceiptNumber($result->getReceiptNumber());
 				} catch (Exception $e) {
 					echo 'Exception when calling ChargesApi->chargesCreate: ', $e->getMessage(), PHP_EOL;
 				}
